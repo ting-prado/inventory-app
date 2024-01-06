@@ -19,6 +19,7 @@ exports.add_branch = asyncHandler(async (req, res, next) => {
 	branch.save().then((result) => res.send("Branch created."));
 });
 
+// Edit branch
 exports.edit_branch = asyncHandler(async (req, res, next) => {
 	const { branchName, location } = req.body;
 	Branch.updateOne(
@@ -30,6 +31,7 @@ exports.edit_branch = asyncHandler(async (req, res, next) => {
 	).then((result) => res.send("Branch edited."));
 });
 
+// Delete branch
 exports.delete_branch = asyncHandler(async (req, res, next) => {
 	Branch.deleteOne({ _id: req.params.id }).then((result) =>
 		res.send("Branch deleted.")
