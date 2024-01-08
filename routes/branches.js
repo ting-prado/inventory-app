@@ -8,6 +8,9 @@ const branch_controller = require("../controllers/branchController");
 // GET branch list
 router.get("/", branch_controller.branch_list);
 
+// GET branch by ID
+router.get("/:id", branch_controller.get_branch);
+
 // ADD branch
 router.post("/", branch_controller.add_branch);
 
