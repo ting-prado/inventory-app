@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/branches", branchRouter);
-app.use("products", productRouter);
+app.use("/products", productRouter);
 
 app.listen(port, () => {
 	console.log("server running");

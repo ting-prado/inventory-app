@@ -8,6 +8,9 @@ const product_controller = require("../controllers/productController");
 // GET product list
 router.get("/", product_controller.product_list);
 
+// GET product by ID
+router.get("/:id", product_controller.get_product);
+
 // ADD product
 router.post("/", product_controller.add_product);
 
