@@ -1,5 +1,5 @@
 const Branch = require("../models/branch");
-const Inventory = require("../models/inventory");
+const Product = require("../models/product");
 const asyncHandler = require("express-async-handler");
 
 // Display all branches
@@ -23,17 +23,7 @@ exports.add_branch = asyncHandler(async (req, res, next) => {
 		location
 	});
 
-	branch
-		.save()
-		.then((result) => {
-			const inventory = new Inventory({
-				branch: result._id,
-				stocks: []
-			});
-
-			inventory.save();
-		})
-		.then(() => res.send("Branch created."));
+	branch.save().then(() => res.send("Branch created."));
 });
 
 // Edit branch
@@ -50,7 +40,14 @@ exports.edit_branch = asyncHandler(async (req, res, next) => {
 
 // Delete branch
 exports.delete_branch = asyncHandler(async (req, res, next) => {
-	Branch.deleteOne({ _id: req.params.id }).then((result) =>
-		res.send("Branch deleted.")
-	);
+	const id = req.params.id;
+
+	Branch.deleteOne({ _id: req.params.id }).then((result) => {
+		Product.updateMany(
+			{ "distribution.branchId": id },
+			{
+				$pull: { distribution: { branchId: id } }
+			}
+		).then(() => res.send("Branch deleted"));
+	});
 });
