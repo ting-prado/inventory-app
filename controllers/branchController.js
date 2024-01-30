@@ -4,15 +4,17 @@ const asyncHandler = require("express-async-handler");
 
 // Display all branches
 exports.branch_list = asyncHandler(async (req, res, next) => {
-	Branch.find()
-		.sort({ branchName: 1 })
-		.then((result) => res.send(result));
+	const result = await Branch.find().sort({ branchName: 1 });
+
+	res.send(result);
 });
 
 // Get branch by I
 exports.get_branch = asyncHandler(async (req, res, next) => {
 	const branchId = req.params.id;
-	Branch.findOne({ _id: branchId }).then((result) => res.send(result));
+	const result = await Branch.findOne({ _id: branchId });
+
+	res.send(result);
 });
 
 // Add branch
@@ -23,31 +25,48 @@ exports.add_branch = asyncHandler(async (req, res, next) => {
 		location
 	});
 
-	branch.save().then(() => res.send("Branch created."));
+	const result = await branch.save();
+	await Product.updateMany(
+		{},
+		{
+			$push: {
+				distribution: {
+					branchId: result._id,
+					count: 0
+				}
+			}
+		}
+	);
+
+	res.send("Branch created");
 });
 
 // Edit branch
 exports.edit_branch = asyncHandler(async (req, res, next) => {
 	const { branchName, location } = req.body;
-	Branch.updateOne(
+	await Branch.updateOne(
 		{ _id: req.params.id },
 		{
 			branchName,
 			location
 		}
-	).then((result) => res.send("Branch edited."));
+	);
+
+	res.send("Branch edited.");
 });
 
 // Delete branch
 exports.delete_branch = asyncHandler(async (req, res, next) => {
 	const id = req.params.id;
 
-	Branch.deleteOne({ _id: req.params.id }).then((result) => {
+	await Branch.deleteOne({ _id: req.params.id }).then((result) => {
 		Product.updateMany(
 			{ "distribution.branchId": id },
 			{
 				$pull: { distribution: { branchId: id } }
 			}
-		).then(() => res.send("Branch deleted"));
+		);
 	});
+
+	res.send("Branch deleted");
 });
