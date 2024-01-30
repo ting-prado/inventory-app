@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 require("dotenv").config();
 const mongoose = require("mongoose");
@@ -15,11 +16,12 @@ const mongoDB = process.env.DB_URI;
 const main = async () => await mongoose.connect(mongoDB);
 main().catch((err) => console.log(err));
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/branches", branchRouter);
-app.use("/products", productRouter);
+app.use("/api/branches", branchRouter);
+app.use("/api/products", productRouter);
 
 app.listen(port, () => {
 	console.log("server running");
