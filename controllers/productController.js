@@ -46,13 +46,14 @@ exports.get_product = asyncHandler(async (req, res, next) => {
 
 // Add product
 exports.add_product = asyncHandler(async (req, res, next) => {
-	const { distribution } = req.body;
+	const { distribution, price } = req.body;
 	const sum = distribution.reduce((sum, i) => sum + i.count, 0);
 	const branches = await Branch.find({}).exec();
 	const branchIds = distribution.map((item) => item.branchId);
 
 	const product = new Product({
 		...req.body,
+		price: Number(price),
 		distribution: distribution.concat(
 			branches
 				.filter((item) => !branchIds.includes(item._id.toString()))
@@ -67,7 +68,7 @@ exports.add_product = asyncHandler(async (req, res, next) => {
 
 // Edit product
 exports.edit_product = asyncHandler(async (req, res, next) => {
-	const { distribution } = req.body;
+	const { distribution, price } = req.body;
 	const productId = req.params.id;
 	const sum = distribution.reduce((sum, i) => sum + i.count, 0);
 	const branches = await Branch.find({}).exec();
@@ -77,6 +78,7 @@ exports.edit_product = asyncHandler(async (req, res, next) => {
 		{ _id: productId },
 		{
 			...req.body,
+			price: Number(price),
 			totalCount: sum,
 			distribution: distribution.concat(
 				branches
