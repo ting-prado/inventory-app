@@ -1,11 +1,17 @@
 const Product = require("../models/product");
 const Branch = require("../models/branch");
 const asyncHandler = require("express-async-handler");
-const ObjectId = require("mongodb").ObjectId;
 
 // Display all products
 exports.product_list = asyncHandler(async (req, res, next) => {
+	const { productName } = req.query;
+
 	const productList = await Product.aggregate([
+		{
+			$match: {
+				productName: { $regex: productName ?? "", $options: "i" }
+			}
+		},
 		{
 			$lookup: {
 				from: "branches",
