@@ -59,14 +59,13 @@ exports.edit_branch = asyncHandler(async (req, res, next) => {
 exports.delete_branch = asyncHandler(async (req, res, next) => {
 	const id = req.params.id;
 
-	await Branch.deleteOne({ _id: req.params.id }).then((result) => {
-		Product.updateMany(
-			{ "distribution.branchId": id },
-			{
-				$pull: { distribution: { branchId: id } }
-			}
-		);
-	});
+	await Branch.deleteOne({ _id: req.params.id });
+	await Product.updateMany(
+		{ "distribution.branchId": id },
+		{
+			$pull: { distribution: { branchId: id } }
+		}
+	);
 
 	res.send("Branch deleted");
 });
