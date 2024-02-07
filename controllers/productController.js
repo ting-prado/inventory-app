@@ -1,6 +1,7 @@
 const Product = require("../models/product");
 const Branch = require("../models/branch");
 const asyncHandler = require("express-async-handler");
+const formatProductResponse = require("../helpers/formatProductResponse");
 
 // Display all products
 exports.product_list = asyncHandler(async (req, res, next) => {
@@ -22,22 +23,7 @@ exports.product_list = asyncHandler(async (req, res, next) => {
 		}
 	]);
 
-	const response = productList.map((product) => {
-		const newData = {
-			...product,
-			distribution: product.distribution.map((branch, idx) => ({
-				...branch,
-				branchName: product.branchDetails[idx].branchName
-			})),
-			undistributed:
-				product.totalCount -
-				product.distribution.reduce((sum, i) => sum + i.count, 0)
-		};
-
-		delete newData.branchDetails;
-
-		return newData;
-	});
+	const response = formatProductResponse(productList);
 
 	res.send(response);
 });
